@@ -1,0 +1,28 @@
+version: '3.7'
+
+services:
+  appliance-store:
+    container_name: store_app
+    build:
+      context: .
+      target: development
+    volumes:
+       - .:/go/src/github.com/mniudanri/store
+    ports:
+      - 5001:5001
+    networks:
+      - storeapp
+
+  db:
+   restart: always
+   image: postgres:9.3
+   ports:
+     - 5432:5432
+   environment:
+      POSTGRES_DB: admin
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+
+networks:
+  storeapp:
+    name: storeapp
