@@ -1,12 +1,9 @@
 package controller
 
 import (
-  // "log"
   "net/http"
-  // "strconv"
   "github.com/mniudanri/store/config"
   "github.com/mniudanri/store/model"
-  // "github.com/go-chi/chi"
 )
 
 // get list products

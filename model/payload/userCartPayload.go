@@ -1,6 +1,6 @@
 package payload
 
 type UserCartCreatePayload struct {
-    ProductId int
+    ProductID int
     Total int
 }

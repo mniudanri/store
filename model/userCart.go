@@ -3,18 +3,13 @@ package model
 import (
   "github.com/mniudanri/store/config"
   responseModel "github.com/mniudanri/store/model/response"
+  "github.com/mniudanri/store/model/entity"
   "errors"
 )
 
-type UserCart struct {
-  UserCartID    int
-	UserID        int
-	IsActive      string
-}
-
 func FindActiveUserCartIdByProductId(productId int) (int, error){
   conf := config.Config
-  userCart := UserCart{}
+  userCart := entity.UserCart{}
   userCartDetail := responseModel.UserCartDetail{}
 
   // NOTE:

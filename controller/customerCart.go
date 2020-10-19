@@ -13,7 +13,7 @@ import (
 func AddProductToCart(w http.ResponseWriter, req *http.Request) {
   requestBody := payloadModel.UserCartCreatePayload{}
   json.NewDecoder(req.Body).Decode(&requestBody)
-  productId := requestBody.ProductId
+  productId := requestBody.ProductID
   total := requestBody.Total
 
   if productId == 0 || total == 0 {
