@@ -1,21 +1,16 @@
 package model
 
 import (
-  "github.com/mniudanri/store/config"
+	"github.com/mniudanri/store/config"
+	"github.com/mniudanri/store/model/entity"
 )
 
-type ProductCategory struct {
-	ProductID      int
-	ProductName    string
-  Categories     string
-}
+func FindAllProductAndCategories() ([]entity.ProductCategory, error) {
+	productCategories := []entity.ProductCategory{}
+	conf := config.Config
 
-func FindAllProductAndCategories() ([]ProductCategory, error) {
-  productCategories := []ProductCategory{}
-  conf := config.Config
-
-  // TODO: add custom query for dinamic WHERE Clause sql?
-  productCategorySql := `
+	// TODO: add custom query for dinamic WHERE Clause sql?
+	productCategorySql := `
     SELECT
       t1.product_id AS "productId",
     	t1.product_name AS "productName",
@@ -27,14 +22,14 @@ func FindAllProductAndCategories() ([]ProductCategory, error) {
 
 	rows, err := conf.DB.Query(productCategorySql)
 
-  if err != nil {
-  	return nil, err
+	if err != nil {
+		return nil, err
 	}
 
-  defer rows.Close()
+	defer rows.Close()
 
 	for rows.Next() {
-		productCategory := ProductCategory{}
+		productCategory := entity.ProductCategory{}
 
 		err = rows.Scan(&productCategory.ProductID, &productCategory.ProductName, &productCategory.Categories)
 		if err != nil {
@@ -44,5 +39,5 @@ func FindAllProductAndCategories() ([]ProductCategory, error) {
 		productCategories = append(productCategories, productCategory)
 	}
 
-  return productCategories, err
+	return productCategories, err
 }

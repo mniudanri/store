@@ -1,63 +1,98 @@
 package controller
 
 import (
-  "log"
-  "net/http"
-  "strconv"
-  "github.com/mniudanri/store/config"
-  "github.com/mniudanri/store/model"
-  "github.com/go-chi/chi"
+	"log"
+	"net/http"
+	"strconv"
+
+	"github.com/go-chi/chi"
+	"github.com/mniudanri/store/config"
+	"github.com/mniudanri/store/model"
+	_ "github.com/mniudanri/store/model/entity"
+	_ "github.com/mniudanri/store/model/response"
 )
 
-// get list products
+// FindProducts godoc
+// @Summary Show all related product
+// @Description Show all related product
+// @Tags Product
+// @Accept */*
+// @Produce json
+// @Success 200 {object} response.ProductListResponse{}
+// @Router /products [get]
 func FindAllProducts(w http.ResponseWriter, req *http.Request) {
-  products, err := model.FindAllProduct()
+	products, err := model.FindAllProduct()
 
-  if err != nil {
-  	log.Print("Failed to execute query: ", err)
+	if err != nil {
+		log.Print("Failed to execute query: ", err)
 		config.SetResponseByInterface(w, nil, http.StatusBadRequest, "Data Not Found")
-    return
+		return
 	}
 
-  config.SetResponseByInterface(w, products, http.StatusOK, "")
+	config.SetResponseByInterface(w, products, http.StatusOK, "")
 }
 
-// find product by id
+// FindProducts godoc
+// @Summary Find product by requested productID
+// @Description show object of product
+// @Tags Product
+// @Accept */*
+// @Produce json
+// @ID productID
+// @Success 200 {object} response.ProductResponse{}
+// @Router /product/{productID} [get]
 func FindProductByRequestId(w http.ResponseWriter, req *http.Request) {
-  id := chi.URLParam(req, "id")
-  productId, _ := strconv.Atoi(id)
+	id := chi.URLParam(req, "productID")
+	productId, _ := strconv.Atoi(id)
 
-  product, err := model.FindProductById(productId)
+	product, err := model.FindProductById(productId)
 
-  if err != nil {
+	if err != nil {
 		config.SetResponseByInterface(w, nil, http.StatusBadRequest, "Data Not Found")
-    return
+		return
 	}
 
-  config.SetResponseByInterface(w, product, http.StatusOK, "")
+	config.SetResponseByInterface(w, product, http.StatusOK, "")
 }
 
+// CheckoutProducts godoc
+// @Summary Checkout all product listed in user cart
+// @Description Checkout all product listed in user cart
+// @Tags User Cart
+// @Accept */*
+// @Produce json
+// @Success 200 {object} response.DefaultResponse{}
+// @Router /checkout [put]
 func CheckoutProducts(w http.ResponseWriter, req *http.Request) {
-  msg, err := model.CheckoutAllProducts()
+	msg, err := model.CheckoutAllProducts()
 
-  if err != nil {
+	if err != nil {
 		config.WriteResponseMessage(w, http.StatusBadRequest, err.Error())
-    return
+		return
 	}
 
-  config.WriteResponseMessage(w, http.StatusOK, msg)
+	config.WriteResponseMessage(w, http.StatusOK, msg)
 }
 
+// FindCheckoutProduct godoc
+// @Summary Find all status checkout product from user
+// @Description Find all checkout product from user
+// @Tags User Cart
+// @Accept */*
+// @Produce json
+// @ID userCartId
+// @Success 200 {object} response.UserCartCheckoutResponse{}
+// @Router /checkout/detail/{userCartId} [get]
 func GetDetailCheckout(w http.ResponseWriter, req *http.Request) {
-  id := chi.URLParam(req, "UserCartId")
-  userCardId, _ := strconv.Atoi(id)
+	id := chi.URLParam(req, "userCartID")
+	userCardId, _ := strconv.Atoi(id)
 
-  detail, err := model.GetDetailCheckout(userCardId)
+	detail, err := model.GetDetailCheckout(userCardId)
 
-  if err != nil {
+	if err != nil {
 		config.SetResponseByInterface(w, detail, http.StatusBadRequest, err.Error())
-    return
+		return
 	}
 
-  config.SetResponseByInterface(w, detail, http.StatusOK, "")
+	config.SetResponseByInterface(w, detail, http.StatusOK, "")
 }
