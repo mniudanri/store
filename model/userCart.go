@@ -3,7 +3,6 @@ package model
 import (
   "github.com/mniudanri/store/config"
   "errors"
-  // "fmt"
 )
 
 type UserCartCategories struct {
@@ -28,6 +27,7 @@ type UserProductCart struct {
   UserCartProductDetailID  int
   ProductID                int
 	ProductName              string
+  Total                    int
 }
 
 func FindActiveUserCartIdByProductId(productId int) (int, error){
@@ -50,7 +50,7 @@ func FindActiveUserCartIdByProductId(productId int) (int, error){
 
   if userCart.UserCartID != 0 {
     cartDetailSql := "SELECT user_cart_detail_product_id FROM user_cart_detail_product WHERE user_cart_id = $1 AND product_id = $2"
-    _ = conf.DB.QueryRow(cartDetailSql, 1, productId).Scan(&userCartDetail.UserCartProductDetailID)
+    _ = conf.DB.QueryRow(cartDetailSql, userCart.UserCartID, productId).Scan(&userCartDetail.UserCartProductDetailID)
 
     if userCartDetail.UserCartProductDetailID != 0 {
       return userCart.UserCartID, errors.New("Product already in the cart")
@@ -64,8 +64,8 @@ func CreateUserCart() (int, error){
   conf := config.Config
   userCartId := 0
 
-  cartSql := "INSERT INTO user_cart (user_id, is_active) VALUES ($1, $2) RETURNING user_cart_id"
-  err := conf.DB.QueryRow(cartSql, 1, 1).Scan(&userCartId)
+  cartSql := "INSERT INTO user_cart (user_id, is_active, is_checkout, is_paid) VALUES ($1, $2, $3, $4) RETURNING user_cart_id"
+  err := conf.DB.QueryRow(cartSql, 1, true, false, false).Scan(&userCartId)
 
   if err != nil {
   	return userCartId, err
@@ -74,19 +74,18 @@ func CreateUserCart() (int, error){
   return userCartId, nil
 }
 
-func CreateUserCartDetailProduct(userCartId int, productId int) (int, error){
+func CreateUserCartDetailProduct(userCartId int, productId int, total int) (int, error){
   conf := config.Config
-  userCartDetailId := 0
+  userCartId_1 := 0
 
-  cartSql := "INSERT INTO user_cart_detail_product (user_cart_id, product_id) VALUES ($1, $2) RETURNING user_cart_id"
-  _,err := conf.DB.Exec(cartSql, userCartId, productId)
-  err = conf.DB.QueryRow(cartSql, 1, productId).Scan(&userCartDetailId)
+  cartSql := "INSERT INTO user_cart_detail_product (user_cart_id, product_id, total) VALUES ($1, $2, $3) RETURNING user_cart_id"
+  err := conf.DB.QueryRow(cartSql, userCartId, productId, total).Scan(&userCartId_1)
 
   if err != nil {
-  	return userCartDetailId, err
+  	return userCartId_1, err
 	}
 
-  return userCartDetailId, nil
+  return userCartId_1, nil
 }
 
 func FindAllProductCartInUser() ([]UserProductCart, error) {
@@ -95,13 +94,15 @@ func FindAllProductCartInUser() ([]UserProductCart, error) {
 
   // TODO: add custom query for dinamic WHERE Clause sql?
   sql := `
-      SELECT t3.product_id, t3.product_name, t2.user_cart_detail_product_id
+    SELECT t3.product_id, t3.product_name, t2.total, t2.user_cart_detail_product_id
     FROM user_cart t1
     INNER JOIN user_cart_detail_product t2 ON t2.user_cart_id = t1.user_cart_id
     INNER JOIN product t3 ON t3.product_id = t2.product_id
     WHERE
-    t1.is_active = TRUE
-    AND t1.user_id = $1`
+      t1.is_active = TRUE
+      AND t1.user_id = $1
+      AND t1.is_checkout = FALSE
+      AND t1.is_paid = FALSE`
 
 	rows, err := conf.DB.Query(sql, 1)
 
@@ -114,7 +115,7 @@ func FindAllProductCartInUser() ([]UserProductCart, error) {
 	for rows.Next() {
 		userProductCart := UserProductCart{}
 
-		err = rows.Scan(&userProductCart.ProductID, &userProductCart.ProductName, &userProductCart.UserCartProductDetailID)
+		err = rows.Scan(&userProductCart.ProductID, &userProductCart.ProductName, &userProductCart.Total, &userProductCart.UserCartProductDetailID)
 		if err != nil {
 			return userProductCarts, err
 		}

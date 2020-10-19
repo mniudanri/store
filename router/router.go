@@ -29,5 +29,9 @@ func InitRoute(port string) {
   r.Post("/user-cart", controller.AddProductToCart)
   r.Get("/user-cart", controller.FindAllProductCart)
 
+  // Checkout
+  r.Put("/checkout", controller.CheckoutProducts)
+  r.Get("/checkout/detail/{UserCartId}", controller.GetDetailCheckout)
+
   http.ListenAndServe(port, r)
 }

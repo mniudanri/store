@@ -7,7 +7,6 @@ import (
   "github.com/mniudanri/store/config"
   "github.com/mniudanri/store/model"
   "github.com/go-chi/chi"
-
 )
 
 // get list products
@@ -27,7 +26,7 @@ func FindAllProducts(w http.ResponseWriter, req *http.Request) {
 func FindProductByRequestId(w http.ResponseWriter, req *http.Request) {
   id := chi.URLParam(req, "id")
   productId, _ := strconv.Atoi(id)
-  
+
   product, err := model.FindProductById(productId)
 
   if err != nil {
@@ -36,4 +35,29 @@ func FindProductByRequestId(w http.ResponseWriter, req *http.Request) {
 	}
 
   config.SetResponseByInterface(w, product, http.StatusOK, "")
+}
+
+func CheckoutProducts(w http.ResponseWriter, req *http.Request) {
+  msg, err := model.CheckoutAllProducts()
+
+  if err != nil {
+		config.WriteResponseMessage(w, http.StatusBadRequest, err.Error())
+    return
+	}
+
+  config.WriteResponseMessage(w, http.StatusOK, msg)
+}
+
+func GetDetailCheckout(w http.ResponseWriter, req *http.Request) {
+  id := chi.URLParam(req, "UserCartId")
+  userCardId, _ := strconv.Atoi(id)
+
+  detail, err := model.GetDetailCheckout(userCardId)
+
+  if err != nil {
+		config.SetResponseByInterface(w, detail, http.StatusBadRequest, err.Error())
+    return
+	}
+
+  config.SetResponseByInterface(w, detail, http.StatusOK, "")
 }

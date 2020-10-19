@@ -14,9 +14,10 @@ func AddProductToCart(w http.ResponseWriter, req *http.Request) {
   requestBody := payloadModel.UserCartCreatePayload{}
   json.NewDecoder(req.Body).Decode(&requestBody)
   productId := requestBody.ProductId
+  total := requestBody.Total
 
-  if productId == 0 {
-    config.WriteResponseMessage(w, http.StatusBadRequest, "ProductID must be filled")
+  if productId == 0 || total == 0 {
+    config.WriteResponseMessage(w, http.StatusBadRequest, "ProductID and Total must be filled")
     return
   }
 
@@ -31,13 +32,13 @@ func AddProductToCart(w http.ResponseWriter, req *http.Request) {
       return
     }
 
-    _, err = model.CreateUserCartDetailProduct(userCartId, productId)
+    _, err = model.CreateUserCartDetailProduct(userCartId, productId, total)
     if err != nil {
       config.WriteResponseMessage(w, http.StatusBadRequest, err.Error())
       return
     }
   } else {
-    _, err = model.CreateUserCartDetailProduct(userActiveCartId, productId)
+    _, err = model.CreateUserCartDetailProduct(userActiveCartId, productId, total)
     if err != nil {
       config.WriteResponseMessage(w, http.StatusBadRequest, err.Error())
       return

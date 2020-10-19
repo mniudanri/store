@@ -86,6 +86,8 @@ CREATE TABLE public.user_cart
     user_cart_id bigint NOT NULL DEFAULT nextval('user_cart_user_cart_id_seq'::regclass),
     user_id bigint NOT NULL,
 		is_active BOOLEAN DEFAULT TRUE,
+    is_checkout BOOLEAN DEFAULT FALSE,
+    is_paid BOOLEAN DEFAULT FALSE,
     CONSTRAINT user_cart_id_pkey PRIMARY KEY (user_cart_id)
 )
 
@@ -104,7 +106,8 @@ CREATE TABLE public.user_cart_detail_product
 (
     user_cart_detail_product_id bigint NOT NULL DEFAULT nextval('user_cart_detail_product_user_cart_detail_product_id_seq'::regclass),
     user_cart_id bigint NOT NULL,
-		product_id bigint NOT NULL,
+    product_id bigint NOT NULL,
+		total bigint NOT NULL,
     CONSTRAINT user_cart_detail_product_id_pkey PRIMARY KEY (user_cart_detail_product_id)
 )
 
