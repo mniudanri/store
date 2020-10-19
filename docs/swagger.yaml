@@ -1,0 +1,211 @@
+basePath: /
+definitions:
+  entity.Product:
+    properties:
+      productID:
+        type: integer
+      productName:
+        type: string
+    type: object
+  entity.ProductCategory:
+    properties:
+      categories:
+        type: string
+      productID:
+        type: integer
+      productName:
+        type: string
+    type: object
+  response.DefaultResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  response.ProductCategoryListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/entity.ProductCategory'
+        type: array
+      message:
+        type: string
+    type: object
+  response.ProductListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/entity.Product'
+        type: array
+      message:
+        type: string
+    type: object
+  response.ProductResponse:
+    properties:
+      data:
+        $ref: '#/definitions/entity.Product'
+      message:
+        type: string
+    type: object
+  response.UserCartCheckoutResponse:
+    properties:
+      productID:
+        type: integer
+      productName:
+        type: string
+      total:
+        type: integer
+    type: object
+  response.UserProductCart:
+    properties:
+      productID:
+        type: integer
+      productName:
+        type: string
+      total:
+        type: integer
+      userCartProductDetailID:
+        type: integer
+    type: object
+  response.UserProductCartListResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.UserProductCart'
+      message:
+        type: string
+    type: object
+host: localhost:3000
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Echo Swagger Example API
+  version: "1.0"
+paths:
+  /checkout:
+    put:
+      consumes:
+      - '*/*'
+      description: Checkout all product listed in user cart
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.DefaultResponse'
+      summary: Checkout all product listed in user cart
+      tags:
+      - User Cart
+  /checkout/detail/{userCartId}:
+    get:
+      consumes:
+      - '*/*'
+      description: Find all checkout product from user
+      operationId: userCartId
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserCartCheckoutResponse'
+      summary: Find all status checkout product from user
+      tags:
+      - User Cart
+  /product-category:
+    get:
+      consumes:
+      - '*/*'
+      description: Find product and its category
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ProductCategoryListResponse'
+      summary: Find product and its category
+      tags:
+      - Product
+  /product/{productID}:
+    get:
+      consumes:
+      - '*/*'
+      description: show object of product
+      operationId: productID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ProductResponse'
+      summary: Find product by requested productID
+      tags:
+      - Product
+  /products:
+    get:
+      consumes:
+      - '*/*'
+      description: Show all related product
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ProductListResponse'
+      summary: Show all related product
+      tags:
+      - Product
+  /user-cart:
+    get:
+      consumes:
+      - '*/*'
+      description: Find all product in user cart
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserProductCartListResponse'
+      summary: Find all product in user cart
+      tags:
+      - User Cart
+    post:
+      consumes:
+      - '*/*'
+      description: Add product to cart
+      parameters:
+      - description: Product ID
+        in: body
+        name: productID
+        required: true
+        schema:
+          type: integer
+      - description: Total
+        in: body
+        name: total
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.DefaultResponse'
+      summary: Add product to cart
+      tags:
+      - User Cart
+schemes:
+- http
+swagger: "2.0"

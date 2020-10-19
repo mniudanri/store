@@ -1,76 +1,77 @@
 package model
 
 import (
-  "github.com/mniudanri/store/config"
-  responseModel "github.com/mniudanri/store/model/response"
-  "github.com/mniudanri/store/model/entity"
-  "errors"
+	"errors"
+
+	"github.com/mniudanri/store/config"
+	"github.com/mniudanri/store/model/entity"
+	responseModel "github.com/mniudanri/store/model/response"
 )
 
-func FindActiveUserCartIdByProductId(productId int) (int, error){
-  conf := config.Config
-  userCart := entity.UserCart{}
-  userCartDetail := responseModel.UserCartDetail{}
+func FindActiveUserCartIdByProductId(productId int) (int, error) {
+	conf := config.Config
+	userCart := entity.UserCart{}
+	userCartDetail := responseModel.UserCartDetail{}
 
-  // NOTE:
-  // - find active user_cart, product
-  // - find same product_id in cart, throw error if product exists
-  productSql := "SELECT product_id FROM product WHERE product_id = $1"
-  _ = conf.DB.QueryRow(productSql, productId).Scan(&userCartDetail.ProductID)
+	// NOTE:
+	// - find active user_cart, product
+	// - find same product_id in cart, throw error if product exists
+	productSql := "SELECT product_id FROM product WHERE product_id = $1"
+	_ = conf.DB.QueryRow(productSql, productId).Scan(&userCartDetail.ProductID)
 
-  if userCartDetail.ProductID == 0 {
-  	return userCart.UserCartID, errors.New("Product not found")
+	if userCartDetail.ProductID == 0 {
+		return userCart.UserCartID, errors.New("Product not found")
 	}
 
-  cartSql := "SELECT user_cart_id FROM user_cart WHERE user_id = $1 AND is_active = $2"
-  _ = conf.DB.QueryRow(cartSql, 1, true).Scan(&userCart.UserCartID)
+	cartSql := "SELECT user_cart_id FROM user_cart WHERE user_id = $1 AND is_active = $2"
+	_ = conf.DB.QueryRow(cartSql, 1, true).Scan(&userCart.UserCartID)
 
-  if userCart.UserCartID != 0 {
-    cartDetailSql := "SELECT user_cart_detail_product_id FROM user_cart_detail_product WHERE user_cart_id = $1 AND product_id = $2"
-    _ = conf.DB.QueryRow(cartDetailSql, userCart.UserCartID, productId).Scan(&userCartDetail.UserCartProductDetailID)
+	if userCart.UserCartID != 0 {
+		cartDetailSql := "SELECT user_cart_detail_product_id FROM user_cart_detail_product WHERE user_cart_id = $1 AND product_id = $2"
+		_ = conf.DB.QueryRow(cartDetailSql, userCart.UserCartID, productId).Scan(&userCartDetail.UserCartProductDetailID)
 
-    if userCartDetail.UserCartProductDetailID != 0 {
-      return userCart.UserCartID, errors.New("Product already in the cart")
-    }
-  }
+		if userCartDetail.UserCartProductDetailID != 0 {
+			return userCart.UserCartID, errors.New("Product already in the cart")
+		}
+	}
 
-  return userCart.UserCartID, nil
+	return userCart.UserCartID, nil
 }
 
-func CreateUserCart() (int, error){
-  conf := config.Config
-  userCartId := 0
+func CreateUserCart() (int, error) {
+	conf := config.Config
+	userCartId := 0
 
-  cartSql := "INSERT INTO user_cart (user_id, is_active, is_checkout, is_paid) VALUES ($1, $2, $3, $4) RETURNING user_cart_id"
-  err := conf.DB.QueryRow(cartSql, 1, true, false, false).Scan(&userCartId)
+	cartSql := "INSERT INTO user_cart (user_id, is_active, is_checkout, is_paid) VALUES ($1, $2, $3, $4) RETURNING user_cart_id"
+	err := conf.DB.QueryRow(cartSql, 1, true, false, false).Scan(&userCartId)
 
-  if err != nil {
-  	return userCartId, err
+	if err != nil {
+		return userCartId, err
 	}
 
-  return userCartId, nil
+	return userCartId, nil
 }
 
-func CreateUserCartDetailProduct(userCartId int, productId int, total int) (int, error){
-  conf := config.Config
-  userCartId_1 := 0
+func CreateUserCartDetailProduct(userCartId int, productId int, total int) (int, error) {
+	conf := config.Config
+	userCartId_1 := 0
 
-  cartSql := "INSERT INTO user_cart_detail_product (user_cart_id, product_id, total) VALUES ($1, $2, $3) RETURNING user_cart_id"
-  err := conf.DB.QueryRow(cartSql, userCartId, productId, total).Scan(&userCartId_1)
+	cartSql := "INSERT INTO user_cart_detail_product (user_cart_id, product_id, total) VALUES ($1, $2, $3) RETURNING user_cart_id"
+	err := conf.DB.QueryRow(cartSql, userCartId, productId, total).Scan(&userCartId_1)
 
-  if err != nil {
-  	return userCartId_1, err
+	if err != nil {
+		return userCartId_1, err
 	}
 
-  return userCartId_1, nil
+	return userCartId_1, nil
 }
 
 func FindAllProductCartInUser() ([]responseModel.UserProductCart, error) {
-  userProductCarts := []responseModel.UserProductCart{}
-  conf := config.Config
+	userProductCarts := []responseModel.UserProductCart{}
+	conf := config.Config
 
-  // TODO: add custom query for dinamic WHERE Clause sql?
-  sql := `
+	// TODO: add custom query for dinamic WHERE Clause sql?
+	sql := `
     SELECT t3.product_id, t3.product_name, t2.total, t2.user_cart_detail_product_id
     FROM user_cart t1
     INNER JOIN user_cart_detail_product t2 ON t2.user_cart_id = t1.user_cart_id
@@ -83,11 +84,11 @@ func FindAllProductCartInUser() ([]responseModel.UserProductCart, error) {
 
 	rows, err := conf.DB.Query(sql, 1)
 
-  if err != nil {
-  	return userProductCarts, err
+	if err != nil {
+		return userProductCarts, err
 	}
 
-  defer rows.Close()
+	defer rows.Close()
 
 	for rows.Next() {
 		userProductCart := responseModel.UserProductCart{}
@@ -100,5 +101,5 @@ func FindAllProductCartInUser() ([]responseModel.UserProductCart, error) {
 		userProductCarts = append(userProductCarts, userProductCart)
 	}
 
-  return userProductCarts, nil
+	return userProductCarts, nil
 }

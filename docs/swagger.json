@@ -1,0 +1,322 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a sample server server.",
+        "title": "Echo Swagger Example API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.swagger.io/support",
+            "email": "support@swagger.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:3000",
+    "basePath": "/",
+    "paths": {
+        "/checkout": {
+            "put": {
+                "description": "Checkout all product listed in user cart",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Cart"
+                ],
+                "summary": "Checkout all product listed in user cart",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.DefaultResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/checkout/detail/{userCartId}": {
+            "get": {
+                "description": "Find all checkout product from user",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Cart"
+                ],
+                "summary": "Find all status checkout product from user",
+                "operationId": "userCartId",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.UserCartCheckoutResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/product-category": {
+            "get": {
+                "description": "Find product and its category",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Find product and its category",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ProductCategoryListResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/product/{productID}": {
+            "get": {
+                "description": "show object of product",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Find product by requested productID",
+                "operationId": "productID",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ProductResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/products": {
+            "get": {
+                "description": "Show all related product",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Show all related product",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ProductListResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/user-cart": {
+            "get": {
+                "description": "Find all product in user cart",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Cart"
+                ],
+                "summary": "Find all product in user cart",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.UserProductCartListResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add product to cart",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Cart"
+                ],
+                "summary": "Add product to cart",
+                "parameters": [
+                    {
+                        "description": "Product ID",
+                        "name": "productID",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Total",
+                        "name": "total",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.DefaultResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "entity.Product": {
+            "type": "object",
+            "properties": {
+                "productID": {
+                    "type": "integer"
+                },
+                "productName": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.ProductCategory": {
+            "type": "object",
+            "properties": {
+                "categories": {
+                    "type": "string"
+                },
+                "productID": {
+                    "type": "integer"
+                },
+                "productName": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.DefaultResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.ProductCategoryListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.ProductCategory"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.ProductListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.Product"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.ProductResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/entity.Product"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.UserCartCheckoutResponse": {
+            "type": "object",
+            "properties": {
+                "productID": {
+                    "type": "integer"
+                },
+                "productName": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "response.UserProductCart": {
+            "type": "object",
+            "properties": {
+                "productID": {
+                    "type": "integer"
+                },
+                "productName": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "userCartProductDetailID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "response.UserProductCartListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.UserProductCart"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
