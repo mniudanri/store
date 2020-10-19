@@ -10,6 +10,7 @@ services:
        - .:/go/src/github.com/mniudanri/store
     ports:
       - 5100:5100
+    command: go run main.go
     networks:
       - storeapp
 

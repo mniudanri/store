@@ -5,12 +5,14 @@ import (
   "fmt"
   "net/http"
   "github.com/go-chi/chi"
+  "github.com/go-chi/chi/middleware"
 	"github.com/swaggo/http-swagger"
 	_ "github.com/swaggo/http-swagger/example/go-chi/docs"
 )
 
 func InitRoute(port string) {
   r := chi.NewRouter()
+  r.Use(middleware.Logger)
 
   pathJson := fmt.Sprintf("http://localhost%s/swagger/doc.json", port)
 

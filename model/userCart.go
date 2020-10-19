@@ -2,14 +2,9 @@ package model
 
 import (
   "github.com/mniudanri/store/config"
+  responseModel "github.com/mniudanri/store/model/response"
   "errors"
 )
-
-type UserCartCategories struct {
-	ProductID      int
-	ProductName    string
-  Categories     string
-}
 
 type UserCart struct {
   UserCartID    int
@@ -17,23 +12,10 @@ type UserCart struct {
 	IsActive      string
 }
 
-type UserCartDetail struct {
-  UserCartProductDetailID  int
-	ProductID                int
-	UserCartID               string
-}
-
-type UserProductCart struct {
-  UserCartProductDetailID  int
-  ProductID                int
-	ProductName              string
-  Total                    int
-}
-
 func FindActiveUserCartIdByProductId(productId int) (int, error){
   conf := config.Config
   userCart := UserCart{}
-  userCartDetail := UserCartDetail{}
+  userCartDetail := responseModel.UserCartDetail{}
 
   // NOTE:
   // - find active user_cart, product
@@ -88,8 +70,8 @@ func CreateUserCartDetailProduct(userCartId int, productId int, total int) (int,
   return userCartId_1, nil
 }
 
-func FindAllProductCartInUser() ([]UserProductCart, error) {
-  userProductCarts := []UserProductCart{}
+func FindAllProductCartInUser() ([]responseModel.UserProductCart, error) {
+  userProductCarts := []responseModel.UserProductCart{}
   conf := config.Config
 
   // TODO: add custom query for dinamic WHERE Clause sql?
@@ -113,7 +95,7 @@ func FindAllProductCartInUser() ([]UserProductCart, error) {
   defer rows.Close()
 
 	for rows.Next() {
-		userProductCart := UserProductCart{}
+		userProductCart := responseModel.UserProductCart{}
 
 		err = rows.Scan(&userProductCart.ProductID, &userProductCart.ProductName, &userProductCart.Total, &userProductCart.UserCartProductDetailID)
 		if err != nil {
