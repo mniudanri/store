@@ -9,8 +9,7 @@ services:
     volumes:
        - .:/go/src/github.com/mniudanri/store
     ports:
-      - 5001:5001
-    command: go run main.go
+      - 5100:5100
     networks:
       - storeapp
 

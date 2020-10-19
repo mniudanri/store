@@ -1,14 +1,11 @@
 package controller
 
 import (
-  // "log"
   "net/http"
-  // "strconv"
   "encoding/json"
   "github.com/mniudanri/store/config"
   "github.com/mniudanri/store/model"
   payloadModel "github.com/mniudanri/store/model/payload"
-  // "github.com/go-chi/chi"
 
 )
 
@@ -48,4 +45,15 @@ func AddProductToCart(w http.ResponseWriter, req *http.Request) {
   }
 
   config.WriteResponseMessage(w, http.StatusOK, "Success adding product to cart!")
+}
+
+func FindAllProductCart(w http.ResponseWriter, req *http.Request) {
+  products, err := model.FindAllProductCartInUser()
+
+  if err != nil {
+		config.SetResponseByInterface(w, nil, http.StatusBadRequest, err.Error())
+    return
+	}
+
+  config.SetResponseByInterface(w, products, http.StatusOK, "")
 }

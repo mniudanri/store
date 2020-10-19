@@ -18,7 +18,7 @@ func FindAllProduct() ([]Product, error) {
 	rows, err := conf.DB.Query(productSql)
 
   if err != nil {
-  	return nil, err
+  	return products, err
 	}
 
   defer rows.Close()
@@ -34,7 +34,7 @@ func FindAllProduct() ([]Product, error) {
 		products = append(products, product)
 	}
 
-  return products, err
+  return products, nil
 }
 
 func FindProductById(id int) (Product, error) {

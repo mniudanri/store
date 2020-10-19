@@ -3,7 +3,7 @@ package model
 import (
   "github.com/mniudanri/store/config"
   "errors"
-  "fmt"
+  // "fmt"
 )
 
 type UserCartCategories struct {
@@ -24,6 +24,12 @@ type UserCartDetail struct {
 	UserCartID               string
 }
 
+type UserProductCart struct {
+  UserCartProductDetailID  int
+  ProductID                int
+	ProductName              string
+}
+
 func FindActiveUserCartIdByProductId(productId int) (int, error){
   conf := config.Config
   userCart := UserCart{}
@@ -34,14 +40,13 @@ func FindActiveUserCartIdByProductId(productId int) (int, error){
   // - find same product_id in cart, throw error if product exists
   productSql := "SELECT product_id FROM product WHERE product_id = $1"
   _ = conf.DB.QueryRow(productSql, productId).Scan(&userCartDetail.ProductID)
-  fmt.Println("product_id: ", userCartDetail.ProductID, productId)
 
-  // if userCartDetail.ProductID == 0 {
-  // 	return userCart.UserCartID, errors.New("Product not found")
-	// }
+  if userCartDetail.ProductID == 0 {
+  	return userCart.UserCartID, errors.New("Product not found")
+	}
 
-  cartSql := "SELECT user_cart_id FROM user_cart WHERE user_id = $1 is_active = $2"
-  _ = conf.DB.QueryRow(cartSql, 1, 1).Scan(&userCart.UserCartID)
+  cartSql := "SELECT user_cart_id FROM user_cart WHERE user_id = $1 AND is_active = $2"
+  _ = conf.DB.QueryRow(cartSql, 1, true).Scan(&userCart.UserCartID)
 
   if userCart.UserCartID != 0 {
     cartDetailSql := "SELECT user_cart_detail_product_id FROM user_cart_detail_product WHERE user_cart_id = $1 AND product_id = $2"
@@ -82,4 +87,40 @@ func CreateUserCartDetailProduct(userCartId int, productId int) (int, error){
 	}
 
   return userCartDetailId, nil
+}
+
+func FindAllProductCartInUser() ([]UserProductCart, error) {
+  userProductCarts := []UserProductCart{}
+  conf := config.Config
+
+  // TODO: add custom query for dinamic WHERE Clause sql?
+  sql := `
+      SELECT t3.product_id, t3.product_name, t2.user_cart_detail_product_id
+    FROM user_cart t1
+    INNER JOIN user_cart_detail_product t2 ON t2.user_cart_id = t1.user_cart_id
+    INNER JOIN product t3 ON t3.product_id = t2.product_id
+    WHERE
+    t1.is_active = TRUE
+    AND t1.user_id = $1`
+
+	rows, err := conf.DB.Query(sql, 1)
+
+  if err != nil {
+  	return userProductCarts, err
+	}
+
+  defer rows.Close()
+
+	for rows.Next() {
+		userProductCart := UserProductCart{}
+
+		err = rows.Scan(&userProductCart.ProductID, &userProductCart.ProductName, &userProductCart.UserCartProductDetailID)
+		if err != nil {
+			return userProductCarts, err
+		}
+
+		userProductCarts = append(userProductCarts, userProductCart)
+	}
+
+  return userProductCarts, nil
 }

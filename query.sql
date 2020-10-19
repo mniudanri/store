@@ -84,7 +84,7 @@ CREATE SEQUENCE public.user_cart_user_cart_id_seq
 CREATE TABLE public.user_cart
 (
     user_cart_id bigint NOT NULL DEFAULT nextval('user_cart_user_cart_id_seq'::regclass),
-    user_id VARCHAR(255),
+    user_id bigint NOT NULL,
 		is_active BOOLEAN DEFAULT TRUE,
     CONSTRAINT user_cart_id_pkey PRIMARY KEY (user_cart_id)
 )
@@ -104,7 +104,7 @@ CREATE TABLE public.user_cart_detail_product
 (
     user_cart_detail_product_id bigint NOT NULL DEFAULT nextval('user_cart_detail_product_user_cart_detail_product_id_seq'::regclass),
     user_cart_id bigint NOT NULL,
-		product_id VARCHAR(255),
+		product_id bigint NOT NULL,
     CONSTRAINT user_cart_detail_product_id_pkey PRIMARY KEY (user_cart_detail_product_id)
 )
 

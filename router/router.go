@@ -18,10 +18,16 @@ func InitRoute(port string) {
     httpSwagger.URL(pathJson), //The url pointing to API definition"
   ))
 
+  // PRODUCT
   r.Get("/products", controller.FindAllProducts)
   r.Get("/product/{id}", controller.FindProductByRequestId)
+
+  // CATEGORY
   r.Get("/product-category", controller.FindAllProductByItsCategory)
+
+  // USER CART
   r.Post("/user-cart", controller.AddProductToCart)
+  r.Get("/user-cart", controller.FindAllProductCart)
 
   http.ListenAndServe(port, r)
 }
