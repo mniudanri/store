@@ -23,5 +23,8 @@ func GetConnection() *sql.DB{
     panic(err)
   }
 
+  fmt.Println("info connection: ",psqlInfo)
+  fmt.Println("Successfully connected!")
+
   return db
 }

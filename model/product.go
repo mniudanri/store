@@ -1,12 +1,11 @@
 package model
 
 import (
-  "fmt"
   "github.com/mniudanri/store/config"
 )
 
 type Product struct {
-	ID       int
+	ID             int
 	ProductName    string
 }
 
@@ -41,8 +40,6 @@ func FindAllProduct() ([]Product, error) {
 func FindProductById(id int) (Product, error) {
   product := Product{}
   conf := config.Config
-
-  fmt.Println(id)
 
   productSql := "SELECT product_id, product_name FROM product WHERE product_id = $1"
   err := conf.DB.QueryRow(productSql, id).Scan(&product.ID, &product.ProductName)

@@ -20,6 +20,8 @@ func InitRoute(port string) {
 
   r.Get("/products", controller.FindAllProducts)
   r.Get("/product/{id}", controller.FindProductByRequestId)
+  r.Get("/product-category", controller.FindAllProductByItsCategory)
+  r.Post("/user-cart", controller.AddProductToCart)
 
   http.ListenAndServe(port, r)
 }
