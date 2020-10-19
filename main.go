@@ -22,7 +22,7 @@ import (
 // @schemes http
 func main() {
 	setter := config.GetConfig()
-  defer setter.DB.Close()
+	defer setter.DB.Close()
 
 	router.InitRoute(":5100")
 }
